@@ -1,99 +1,63 @@
-# Sahayak Mesh — SNIST College Campus Edge Truth Layer
+# Sahayak — Frontend skeleton (Prompts 0–2 of the build pack)
 
-A large-scale, offline-first P2P mesh network system and Google Maps GIS edge routing platform designed for high-density campus environments (SNIST Ghatkesar, Hyderabad).
+This is a working starting point for the Sahayak Android frontend, matching
+`Sangam Mesh — Locked Tech Stack v1.0` exactly: native Android, Kotlin,
+Jetpack Compose + Material 3, one APK / one architecture, no cloud, no web
+framework. Drop the `app/src/main/java/com/sangam/mesh` tree into an existing
+Android Studio project (or use this as the app module directly) and it will
+build and run standalone — every screen has synthetic preview data, no
+Nearby/Room dependency is required yet.
 
-## 🚀 Project Overview
+## What's implemented
 
-Sahayak Mesh provides a local truth layer and edge route evaluation engine for crowded venues. When central cellular or cloud connectivity fails, campus nodes form a peer-to-peer mesh topology to route visitors, propagate staff observations, and maintain venue state in real time.
+| Layer | File | Prompt-pack step |
+|---|---|---|
+| Design tokens | `ui/theme/Color.kt`, `Type.kt`, `Dimens.kt`, `Theme.kt` | Prompt 1 |
+| Reusable status components | `ui/components/StatusComponents.kt` | Prompt 1 |
+| Reusable state/action components | `ui/components/CommonStates.kt` | Prompt 1 |
+| Shared enums (no UI dependency) | `core/SemanticStates.kt`, `mission/Role.kt` | Prompt 1 (contract) |
+| Navigation graph + policy | `ui/navigation/*` | Prompt 3 |
+| Welcome + Role selection | `ui/onboarding/*` | Prompt 2 |
+| Device Readiness (UiState + ViewModel + Screen) | `ui/readiness/*` | Prompt 2 |
+| App shell | `MainActivity.kt` | Prompt 1 |
 
-### Key Capabilities
-- **Multi-Building & Multi-Floor Navigation**: Interactive spatial selection across CSE/AI, Admin, ECE, Mechanical, Library, and Canteen blocks.
-- **Google Maps GIS Edge Visualizer**: WGS84 spatial overlays, offline polyline rendering, and place record sync bridge.
-- **Dynamic P2P Mesh Topology**: Real-time graph visualization of active cluster nodes, state reconciliation, and node failure/reconnection simulation.
-- **Telemetry & Audit Log Timeline**: Sub-millisecond route latency tracking, confidence scoring, and immutable event auditing.
+## Architecture rules already enforced in this code
 
----
+1. **No composable touches Room, DAOs, NearbyTransport, or MissionKeyStore.**
+   `ReadinessScreen` only depends on `ReadinessSource`, an interface — the
+   real implementation (backed by `NodeRepository` + `NearbyTransport`) gets
+   swapped in later without touching a single Composable.
+2. **State flows one way.** `ReadinessViewModel` exposes
+   `StateFlow<ReadinessUiState>`; the screen renders it and sends back
+   `ReadinessIntent` values only.
+3. **Every semantic state pairs color with text/icon** (see
+   `StatusComponents.kt`) — never color alone, per the accessibility
+   requirement in Prompt 12.
+4. **Internet-disabled is rendered as expected, not as an error** — see the
+   `LocalModeBanner` and the "Internet" row in `ReadinessScreen`.
+5. **Readiness is a real navigation gate.** `SahayakNavGraph` routes through
+   `READINESS` before any role home screen and pops the back stack so it
+   can't be skipped by pressing back.
 
-## 🛠 Tech Stack
+## What's intentionally stubbed
 
-- **Framework**: [Next.js 16 (App Router)](https://nextjs.org/)
-- **UI Library**: [React 19](https://react.dev/)
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
-- **Language**: [TypeScript 5](https://www.typescriptlang.org/)
-- **Icons**: [Lucide React](https://lucide.dev/)
+- `VISITOR_HOME`, `STAFF_HOME`, `RELAY_HOME`, `COORDINATOR_HOME` route to a
+  visible placeholder (`RoleHomePlaceholder`) that states plainly it isn't
+  built yet — this is deliberate per the "no fake success / no placeholder
+  screens that hide uncertainty" rule. Build these in Prompts 4–7.
+- `ReadinessSource` has a `FakeReadinessSource` implementation so the screen
+  is runnable today. Replace it with a real implementation once
+  `NodeRepository` / `NearbyTransport` exist (Prompt 10).
+- No Room, no Protobuf, no Nearby dependency is in `build.gradle.kts` yet —
+  add `androidx.room:room-*`, the Nearby Connections artifact, and the
+  Protobuf Gradle plugin when you start the phases that need persistence and
+  transport (per the locked stack's dependency table).
 
----
+## Exact next step
 
-## 📦 Installation & Local Setup
-
-Clone the repository and install dependencies:
-
-```bash
-git clone https://github.com/dinesh798130-prog/Sahayak-Mesh.git
-cd Sahayak-Mesh
-npm install
-```
-
----
-
-## 💻 Development
-
-Start the Next.js development server:
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
-
----
-
-## 🏗 Production Build & Testing
-
-Validate code quality, linting, and build the production package:
-
-```bash
-# Run ESLint validation
-npm run lint
-
-# Build production bundle
-npm run build
-
-# Start local production server
-npm run start
-```
-
----
-
-## 🔑 Environment Variables
-
-Copy `.env.example` to `.env.local` for local environment configuration:
-
-```bash
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_api_key_here
-NEXT_PUBLIC_CAMPUS_LAT=17.4529
-NEXT_PUBLIC_CAMPUS_LNG=78.6754
-```
-
-> **Note**: If `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` is omitted, the application runs seamlessly in offline canvas fallback mode.
-
----
-
-## 🌐 Deployment (Vercel)
-
-This application is ready for deployment on **Vercel** (`sahayak-mesh2.0`).
-
-### Vercel Project Settings
-- **Framework Preset**: Next.js
-- **Root Directory**: `./`
-- **Build Command**: `npm run build`
-- **Install Command**: `npm install`
-- **Output Directory**: Next.js default (do **not** override)
-
----
-
-## 🔗 GitHub Repository
-
-- **Repository**: [https://github.com/dinesh798130-prog/Sahayak-Mesh](https://github.com/dinesh798130-prog/Sahayak-Mesh)
-- **Account Owner**: `dinesh798130-prog`
-- **Branch**: `main`
+Follow **Prompt 3** in the pack (shared navigation/state semantics — already
+partially done here, verify against your actual repo state) then **Prompt 4**
+(Visitor experience) using the same pattern as `ReadinessScreen`:
+`XyzUiState.kt` (data class + sample fixtures) → `XyzViewModel.kt`
+(StateFlow + intents) → `XyzScreen.kt` (stateful wrapper + stateless
+`XyzContent` + `@Preview`s for every state, including empty/error/conflict).

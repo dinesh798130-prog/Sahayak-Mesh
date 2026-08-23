@@ -3,7 +3,7 @@
 import React from 'react';
 import { useSahayakMesh } from '@/lib/sahayak-mesh/mesh-context';
 import { NodeRole } from '@/lib/sahayak-mesh/types';
-import { User, ShieldAlert, Radio, Server } from 'lucide-react';
+import { User, ShieldAlert, Radio, Server, Check } from 'lucide-react';
 
 interface RoleOption {
   role: NodeRole;
@@ -11,7 +11,9 @@ interface RoleOption {
   label: string;
   subtitle: string;
   icon: React.ElementType;
-  color: string;
+  accentColor: string;
+  badgeBg: string;
+  badgeText: string;
 }
 
 export function RoleSelector() {
@@ -21,10 +23,12 @@ export function RoleSelector() {
     {
       role: 'visitor',
       nodeId: 'node-visitor-1',
-      label: 'Visitor / Patient',
-      subtitle: 'Requests accessible resources & routes',
+      label: 'Student / Visitor',
+      subtitle: 'Requests accessible resources & optimal edge routes',
       icon: User,
-      color: 'border-blue-500 bg-blue-50/60 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300'
+      accentColor: 'border-blue-500/60 bg-blue-950/30 shadow-blue-500/10',
+      badgeBg: 'bg-blue-500/20',
+      badgeText: 'text-blue-400'
     },
     {
       role: 'staff',
@@ -32,38 +36,53 @@ export function RoleSelector() {
       label: 'Staff Observer',
       subtitle: 'Reports physical state changes (Lift broken, Counter open)',
       icon: ShieldAlert,
-      color: 'border-emerald-500 bg-emerald-50/60 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300'
+      accentColor: 'border-emerald-500/60 bg-emerald-950/30 shadow-emerald-500/10',
+      badgeBg: 'bg-emerald-500/20',
+      badgeText: 'text-emerald-400'
     },
     {
       role: 'relay',
       nodeId: 'node-relay-1',
       label: 'Crowd Relay Observer',
-      subtitle: 'Mobile crowd observer & P2P message store-and-forward',
+      subtitle: 'Mobile crowd observer & P2P store-and-forward node',
       icon: Radio,
-      color: 'border-purple-500 bg-purple-50/60 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300'
+      accentColor: 'border-purple-500/60 bg-purple-950/30 shadow-purple-500/10',
+      badgeBg: 'bg-purple-500/20',
+      badgeText: 'text-purple-400'
     },
     {
       role: 'coordinator',
       nodeId: 'node-coordinator-1',
-      label: 'Local Venue Coordinator',
+      label: 'Campus Edge Gateway',
       subtitle: 'Full topology health, conflict review & decision audit',
       icon: Server,
-      color: 'border-amber-500 bg-amber-50/60 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300'
+      accentColor: 'border-amber-500/60 bg-amber-950/30 shadow-amber-500/10',
+      badgeBg: 'bg-amber-500/20',
+      badgeText: 'text-amber-400'
     }
   ];
 
   return (
-    <div className="flex flex-col gap-3 p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
-          FR-02 Role Selection (Single Codebase Prototype)
-        </h3>
-        <span className="text-xs text-slate-500">
-          Active Device ID: <code className="font-mono text-indigo-600 dark:text-indigo-400 font-semibold">{activeNodeId}</code>
-        </span>
+    <div className="glass-panel glass-panel-hover rounded-2xl p-5 shadow-xl flex flex-col gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+        <div className="flex items-center gap-2">
+          <h3 className="text-sm font-black text-slate-100 uppercase tracking-wider">
+            FR-02 Role & Device Switcher
+          </h3>
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+            Active Persona Simulator
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2 text-xs font-mono">
+          <span className="text-slate-400">Active Device:</span>
+          <code className="px-2 py-0.5 rounded-md bg-indigo-950 text-indigo-300 font-bold border border-indigo-800/60">
+            {activeNodeId}
+          </code>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
         {roleOptions.map(opt => {
           const Icon = opt.icon;
           const isSelected = activeNodeId === opt.nodeId;
@@ -74,23 +93,32 @@ export function RoleSelector() {
             <button
               key={opt.nodeId}
               onClick={() => setActiveNodeId(opt.nodeId)}
-              className={`flex flex-col p-3 rounded-xl border text-left transition-all relative ${
+              className={`flex flex-col p-4 rounded-xl border text-left transition-all relative cursor-pointer ${
                 isSelected
-                  ? `${opt.color} shadow-sm ring-2 ring-indigo-500/50`
-                  : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30'
+                  ? `${opt.accentColor} border-2 shadow-lg ring-2 ring-indigo-500/40 scale-[1.02]`
+                  : 'border-slate-800/80 hover:border-slate-700 bg-slate-900/50 hover:bg-slate-800/40 opacity-80 hover:opacity-100'
               }`}
             >
               {isDisconnected && (
-                <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-500 text-white">
+                <span className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[9px] font-black bg-rose-500 text-white shadow-xs tracking-wider">
                   OFFLINE
                 </span>
               )}
 
-              <div className="flex items-center gap-2 mb-1">
-                <Icon className="w-4 h-4 shrink-0" />
-                <span className="font-bold text-xs">{opt.label}</span>
+              {isSelected && !isDisconnected && (
+                <span className="absolute top-3 right-3 p-1 rounded-full bg-indigo-600 text-white shadow-xs">
+                  <Check className="w-3 h-3" />
+                </span>
+              )}
+
+              <div className="flex items-center gap-2.5 mb-2">
+                <div className={`p-2 rounded-lg ${opt.badgeBg} ${opt.badgeText}`}>
+                  <Icon className="w-4 h-4 shrink-0" />
+                </div>
+                <span className="font-extrabold text-xs text-slate-100">{opt.label}</span>
               </div>
-              <p className="text-[11px] opacity-80 leading-tight">
+
+              <p className="text-[11px] text-slate-400 leading-relaxed">
                 {opt.subtitle}
               </p>
             </button>

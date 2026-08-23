@@ -54,9 +54,6 @@ export class SahayakMeshEngine {
     INITIAL_VENUE_RESOURCES.forEach(r => this.resources.set(r.resourceId, r));
     this.nodes = [...INITIAL_NODES];
 
-    // Load local storage if available
-    this.loadFromStorage();
-
     // Seed Google Maps places cache if empty
     if (this.gmapsCache.size === 0) {
       this.seedGoogleMapsCache();
@@ -79,14 +76,14 @@ export class SahayakMeshEngine {
           formattedAddress: res.gis.formattedAddress || '',
           placeTypes: res.gis.googlePlaceTypes || [],
           accessibilityRating: res.accessible ? 5.0 : 2.5,
-          syncedAt: Date.now()
+          syncedAt: 1700000000000
         });
       }
     });
   }
 
   private seedInitialObservations() {
-    const now = Date.now();
+    const baseTime = 1700000000000;
     const defaultObs: ResourceObservation[] = [
       {
         observationId: 'obs-init-1',
@@ -96,8 +93,8 @@ export class SahayakMeshEngine {
         confidence: 0.95,
         crowdEstimate: 'low',
         reason: 'Staff verified main entry gate operating normally',
-        createdAt: now - 60000,
-        expiresAt: now + 3600000
+        createdAt: baseTime - 60000,
+        expiresAt: baseTime + 3600000
       },
       {
         observationId: 'obs-init-2',
@@ -107,8 +104,8 @@ export class SahayakMeshEngine {
         confidence: 0.9,
         crowdEstimate: 'low',
         reason: 'Low queue at admin counter',
-        createdAt: now - 30000,
-        expiresAt: now + 3600000
+        createdAt: baseTime - 30000,
+        expiresAt: baseTime + 3600000
       },
       {
         observationId: 'obs-init-3',
@@ -118,15 +115,15 @@ export class SahayakMeshEngine {
         confidence: 0.85,
         crowdEstimate: 'moderate',
         reason: 'Elevator running smoothly',
-        createdAt: now - 120000,
-        expiresAt: now + 3600000
+        createdAt: baseTime - 120000,
+        expiresAt: baseTime + 3600000
       }
     ];
 
     defaultObs.forEach(obs => this.addObservationInternal(obs, false));
   }
 
-  private loadFromStorage() {
+  public loadFromStorage() {
     if (typeof window === 'undefined') return;
     try {
       const storedObs = localStorage.getItem(STORAGE_KEYS.OBSERVATIONS);

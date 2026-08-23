@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useSahayakMesh } from '@/lib/sahayak-mesh/mesh-context';
-import { Play, CheckCircle2, RotateCcw, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Play, CheckCircle2, RotateCcw, ArrowRight, Sparkles, Terminal, Check } from 'lucide-react';
 
 interface DemoStep {
   stepNumber: number;
@@ -24,6 +24,11 @@ export function DemoScenarioRunner() {
   const [currentStepIdx, setCurrentStepIdx] = useState<number>(0);
   const [stepLogs, setStepLogs] = useState<string[]>([]);
   const [isRunning, setIsRunning] = useState<boolean>(false);
+  const consoleEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    consoleEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [stepLogs]);
 
   const steps: DemoStep[] = [
     {
@@ -37,13 +42,13 @@ export function DemoScenarioRunner() {
     {
       stepNumber: 2,
       title: '2. Visitor requests an accessible counter',
-      expectedResult: 'The coordinator returns a local route decision recommending Registration Counter 1.',
+      expectedResult: 'The coordinator returns a local route decision recommending Central Admin Desk.',
       action: () => {
         const dec = evaluateRoute({
           requestId: 'demo-req-1',
           requestedType: 'counter',
           accessibilityNeed: true,
-          preferredZone: 'Zone A',
+          preferredZone: 'Central Admin Wing',
           createdAt: Date.now()
         });
         setStepLogs(prev => [...prev, `✓ Visitor decision: Recommended '${resources.find(r => r.resourceId === dec.selectedResourceId)?.name}'.`]);
@@ -161,7 +166,7 @@ export function DemoScenarioRunner() {
     for (let i = 0; i < steps.length; i++) {
       steps[i].action();
       setCurrentStepIdx(i + 1);
-      await new Promise(resolve => setTimeout(resolve, 600));
+      await new Promise(resolve => setTimeout(resolve, 500));
     }
     setIsRunning(false);
   };
@@ -172,36 +177,43 @@ export function DemoScenarioRunner() {
     setStepLogs([]);
   };
 
+  const progressPercent = Math.round((currentStepIdx / steps.length) * 100);
+
   return (
-    <div className="flex flex-col gap-4 p-5 rounded-2xl border border-indigo-200 dark:border-indigo-900/60 bg-gradient-to-br from-indigo-50/60 via-white to-purple-50/40 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/30 shadow-md">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-indigo-100 dark:border-slate-800 pb-3">
-        <div className="flex items-center gap-2">
-          <div className="p-2 rounded-lg bg-indigo-600 text-white font-bold shadow-xs">
-            <Play className="w-5 h-5" />
+    <div className="glass-panel glass-panel-hover rounded-2xl p-5 shadow-xl flex flex-col gap-4 border-indigo-500/30">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
+        <div className="flex items-center gap-3.5">
+          <div className="p-3 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-black shadow-lg shadow-indigo-500/20">
+            <Sparkles className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
-              Mandatory PRD 2-Minute Hackathon Demo Acceptance Script
-            </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              PRD Section 10: Step-by-Step Acceptance Scenario Automator
+            <div className="flex items-center gap-2">
+              <h3 className="text-base font-black tracking-tight text-slate-100">
+                PRD 2-Minute Acceptance Scenario Automator
+              </h3>
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                PRD Sec 10
+              </span>
+            </div>
+            <p className="text-xs text-slate-400">
+              Interactive 10-step verification runner for offline routing, node disconnections & outbox replay
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <button
             onClick={handleRunAll}
             disabled={isRunning}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-semibold shadow-xs transition"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 disabled:opacity-50 text-white text-xs font-extrabold shadow-lg shadow-indigo-500/25 active:scale-95 transition-all cursor-pointer"
           >
-            <Play className="w-3.5 h-3.5 fill-current" />
-            <span>{isRunning ? 'Running Script...' : 'Run Full Demo Script'}</span>
+            <Play className="w-4 h-4 fill-current" />
+            <span>{isRunning ? 'Executing Scenario...' : 'Run Full Demo Script'}</span>
           </button>
 
           <button
             onClick={handleReset}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-300 dark:hover:bg-slate-700 transition"
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700/90 text-slate-300 text-xs font-bold border border-slate-700/80 active:scale-95 transition cursor-pointer"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Reset</span>
@@ -209,15 +221,29 @@ export function DemoScenarioRunner() {
         </div>
       </div>
 
-      {/* Interactive Step Navigator */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Left: Step List */}
-        <div className="flex flex-col gap-2">
-          <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
-            Acceptance Steps ({currentStepIdx} / {steps.length} Completed):
+      {/* Visual Progress Bar */}
+      <div className="flex flex-col gap-1.5">
+        <div className="flex items-center justify-between text-xs font-mono font-bold">
+          <span className="text-slate-400">Automated Verification Progress:</span>
+          <span className="text-indigo-400">{currentStepIdx} / {steps.length} Steps Completed ({progressPercent}%)</span>
+        </div>
+        <div className="w-full h-2 rounded-full bg-slate-900 overflow-hidden border border-slate-800">
+          <div 
+            className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 transition-all duration-300 rounded-full"
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Grid: Step Navigator + Execution Console */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+        {/* Left: Step Navigator */}
+        <div className="md:col-span-6 flex flex-col gap-2">
+          <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+            Step Sequence:
           </span>
 
-          <div className="flex flex-col gap-1.5 max-h-60 overflow-y-auto pr-1">
+          <div className="flex flex-col gap-1.5 max-h-64 overflow-y-auto pr-1.5">
             {steps.map((step, idx) => {
               const isDone = idx < currentStepIdx;
               const isCurrent = idx === currentStepIdx;
@@ -225,29 +251,31 @@ export function DemoScenarioRunner() {
               return (
                 <div
                   key={step.stepNumber}
-                  className={`p-2.5 rounded-lg border text-xs flex items-center justify-between transition-all ${
+                  className={`p-3 rounded-xl border text-xs flex items-center justify-between transition-all ${
                     isDone 
-                      ? 'border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/60 dark:bg-emerald-950/30 text-emerald-900 dark:text-emerald-200' 
+                      ? 'border-emerald-500/40 bg-emerald-950/20 text-emerald-300' 
                       : isCurrent
-                      ? 'border-indigo-400 dark:border-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 font-bold ring-2 ring-indigo-400'
-                      : 'border-slate-200 dark:border-slate-800 opacity-60'
+                      ? 'border-indigo-500 bg-indigo-950/50 font-bold ring-2 ring-indigo-500/40 text-slate-100 shadow-md'
+                      : 'border-slate-800/80 bg-slate-900/40 opacity-60 text-slate-400'
                   }`}
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2.5">
                     {isDone ? (
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                      <div className="p-1 rounded-md bg-emerald-500/20 text-emerald-400">
+                        <Check className="w-3.5 h-3.5" />
+                      </div>
                     ) : (
-                      <span className="w-4 h-4 rounded-full border border-slate-400 text-[10px] flex items-center justify-center font-mono">
+                      <span className="w-5 h-5 rounded-md bg-slate-800 text-[10px] font-mono font-bold flex items-center justify-center text-indigo-300 border border-slate-700">
                         {step.stepNumber}
                       </span>
                     )}
-                    <span className="truncate max-w-[240px]">{step.title}</span>
+                    <span className="truncate max-w-[210px] sm:max-w-[280px] font-semibold">{step.title}</span>
                   </div>
 
                   {isCurrent && !isRunning && (
                     <button
                       onClick={handleNextStep}
-                      className="px-2 py-0.5 rounded bg-indigo-600 text-white font-bold text-[10px] hover:bg-indigo-700 transition"
+                      className="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-[11px] shadow-sm transition active:scale-95 cursor-pointer shrink-0"
                     >
                       Execute
                     </button>
@@ -258,24 +286,28 @@ export function DemoScenarioRunner() {
           </div>
         </div>
 
-        {/* Right: Real-Time Execution Log Output */}
-        <div className="flex flex-col gap-2">
-          <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
-            Execution Audit Output:
+        {/* Right: Console Audit Terminal */}
+        <div className="md:col-span-6 flex flex-col gap-2">
+          <span className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+            <Terminal className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Execution Audit Output:</span>
           </span>
 
-          <div className="p-3 rounded-xl bg-slate-950 font-mono text-xs text-slate-200 border border-slate-800 h-60 overflow-y-auto flex flex-col gap-1.5">
+          <div className="p-3.5 rounded-xl bg-slate-950 font-mono text-xs text-slate-200 border border-slate-800/90 h-64 overflow-y-auto flex flex-col gap-2">
             {stepLogs.length === 0 ? (
-              <span className="text-slate-500 italic text-[11px] my-auto text-center">
-                Click &apos;Run Full Demo Script&apos; or &apos;Execute&apos; step to trigger automated acceptance scenario.
-              </span>
+              <div className="text-slate-500 italic text-[11px] my-auto text-center flex flex-col items-center gap-1">
+                <Terminal className="w-6 h-6 opacity-30" />
+                <span>Click &apos;Run Full Demo Script&apos; or &apos;Execute&apos; step to trigger scenario.</span>
+              </div>
             ) : (
               stepLogs.map((log, idx) => (
-                <div key={idx} className="leading-snug text-emerald-400">
-                  {log}
+                <div key={idx} className="leading-relaxed text-emerald-400 text-[11px] flex items-start gap-1.5">
+                  <span className="text-slate-600 shrink-0">&gt;</span>
+                  <span>{log}</span>
                 </div>
               ))
             )}
+            <div ref={consoleEndRef} />
           </div>
         </div>
       </div>

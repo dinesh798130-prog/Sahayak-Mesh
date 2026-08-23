@@ -66,6 +66,13 @@ export function SahayakMeshProvider({ children }: { children: React.ReactNode })
     setGmapsCache([...engine.getGmapsCache()]);
   }, [engine]);
 
+  useEffect(() => {
+    queueMicrotask(() => {
+      engine.loadFromStorage();
+      updateState();
+    });
+  }, [engine, updateState]);
+
   const setActiveNodeId = (nodeId: string) => {
     engine.setActiveNodeId(nodeId);
     setActiveNodeIdState(nodeId);

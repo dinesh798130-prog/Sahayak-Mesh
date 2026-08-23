@@ -47,13 +47,13 @@ const SahayakMeshContext = createContext<SahayakMeshContextType | null>(null);
 export function SahayakMeshProvider({ children }: { children: React.ReactNode }) {
   const engine = useMemo(() => new SahayakMeshEngine(), []);
   
-  const [resources, setResources] = useState<VenueResource[]>([]);
-  const [resourceStates, setResourceStates] = useState<ResourceState[]>([]);
-  const [nodes, setNodes] = useState<MeshNode[]>([]);
-  const [outbox, setOutbox] = useState<OutboxItem[]>([]);
-  const [eventLogs, setEventLogs] = useState<EventLog[]>([]);
-  const [telemetry, setTelemetry] = useState<TelemetryMetrics>(engine.getTelemetry());
-  const [gmapsCache, setGmapsCache] = useState<GoogleMapsPlaceRecord[]>([]);
+  const [resources, setResources] = useState<VenueResource[]>(() => engine.getResources());
+  const [resourceStates, setResourceStates] = useState<ResourceState[]>(() => engine.getAllResourceStates());
+  const [nodes, setNodes] = useState<MeshNode[]>(() => engine.getNodes());
+  const [outbox, setOutbox] = useState<OutboxItem[]>(() => engine.getOutbox());
+  const [eventLogs, setEventLogs] = useState<EventLog[]>(() => engine.getEventLogs());
+  const [telemetry, setTelemetry] = useState<TelemetryMetrics>(() => engine.getTelemetry());
+  const [gmapsCache, setGmapsCache] = useState<GoogleMapsPlaceRecord[]>(() => engine.getGmapsCache());
   const [activeNodeId, setActiveNodeIdState] = useState<string>('node-coordinator-1');
 
   const updateState = useCallback(() => {
@@ -65,10 +65,6 @@ export function SahayakMeshProvider({ children }: { children: React.ReactNode })
     setTelemetry({ ...engine.getTelemetry() });
     setGmapsCache([...engine.getGmapsCache()]);
   }, [engine]);
-
-  useEffect(() => {
-    updateState();
-  }, [updateState]);
 
   const setActiveNodeId = (nodeId: string) => {
     engine.setActiveNodeId(nodeId);

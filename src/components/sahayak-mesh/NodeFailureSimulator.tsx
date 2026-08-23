@@ -19,7 +19,7 @@ export function NodeFailureSimulator() {
 
     // 2. Submit observation while disconnected so it queues in outbox
     submitObservation({
-      resourceId: 'res-lift-1',
+      resourceId: 'res-admin-lift',
       state: 'Broken',
       confidence: 0.95,
       reason: 'Outbox test: Motor failure observed while node disconnected',

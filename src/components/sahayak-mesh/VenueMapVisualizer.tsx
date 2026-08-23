@@ -80,7 +80,7 @@ export function VenueMapVisualizer({ selectedPathSegments = [], onSelectResource
               FR-03 Venue Resource Catalog & Live Floor Map
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              8 Seeded Hospital Nodes (Ground Floor) • Ephemeral State Fusion Layer
+              SNIST College Campus Layout • Ephemeral State Fusion Layer
             </p>
           </div>
         </div>
@@ -105,13 +105,13 @@ export function VenueMapVisualizer({ selectedPathSegments = [], onSelectResource
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-30" />
 
         <div className="absolute top-3 left-4 text-xs font-mono font-bold text-slate-600 uppercase tracking-widest">
-          Zone A (Main OPD)
+          South Campus & Gates
         </div>
         <div className="absolute top-3 right-4 text-xs font-mono font-bold text-slate-600 uppercase tracking-widest">
-          Zone B (Emergency & Diagnostic)
+          North Engineering Blocks
         </div>
         <div className="absolute bottom-3 left-1/2 -translate-x-1/2 text-xs font-mono font-bold text-slate-600 uppercase tracking-widest">
-          Zone Central (Lobby & Elevator Hub)
+          Central Admin & Library Hub
         </div>
 
         <svg className="absolute inset-0 w-full h-full pointer-events-none">

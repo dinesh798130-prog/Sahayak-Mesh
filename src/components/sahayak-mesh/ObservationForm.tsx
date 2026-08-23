@@ -8,7 +8,7 @@ import { ShieldAlert, Plus, CheckCircle2, AlertOctagon } from 'lucide-react';
 export function ObservationForm() {
   const { resources, submitObservation, activeNodeId, nodes } = useSahayakMesh();
 
-  const [resourceId, setResourceId] = useState<string>('res-lift-1');
+  const [resourceId, setResourceId] = useState<string>('res-admin-lift');
   const [state, setState] = useState<ObservationState>('Broken');
   const [crowdEstimate, setCrowdEstimate] = useState<'low' | 'moderate' | 'high' | 'overcrowded'>('high');
   const [reason, setReason] = useState<string>('Elevator motor door stuck on ground floor');

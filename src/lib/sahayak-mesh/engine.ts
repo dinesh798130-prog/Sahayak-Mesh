@@ -90,29 +90,29 @@ export class SahayakMeshEngine {
     const defaultObs: ResourceObservation[] = [
       {
         observationId: 'obs-init-1',
-        resourceId: 'res-entrance-1',
+        resourceId: 'res-gate-main',
         state: 'Available',
         sourceNodeId: 'node-staff-1',
         confidence: 0.95,
         crowdEstimate: 'low',
-        reason: 'Staff verified entry gate operating normally',
+        reason: 'Staff verified main entry gate operating normally',
         createdAt: now - 60000,
         expiresAt: now + 3600000
       },
       {
         observationId: 'obs-init-2',
-        resourceId: 'res-counter-1',
+        resourceId: 'res-admin-counter',
         state: 'Available',
         sourceNodeId: 'node-staff-1',
         confidence: 0.9,
         crowdEstimate: 'low',
-        reason: 'Low queue at accessible counter',
+        reason: 'Low queue at admin counter',
         createdAt: now - 30000,
         expiresAt: now + 3600000
       },
       {
         observationId: 'obs-init-3',
-        resourceId: 'res-lift-1',
+        resourceId: 'res-admin-lift',
         state: 'Available',
         sourceNodeId: 'node-relay-1',
         confidence: 0.85,
@@ -221,7 +221,7 @@ export class SahayakMeshEngine {
     return {
       activeRole: activeNode?.role || 'coordinator',
       activeNodeName: activeNode?.displayName || 'Local Coordinator',
-      venueId: 'HOSPITAL-BLDG-MAIN-01',
+      venueId: 'SNIST-CAMPUS-GHATKESAR-01',
       localTransport: 'Nearby P2P Cluster (BLE + Wi-Fi Direct)',
       isInternetDisabled: this.isInternetDisabled,
       isBluetoothActive: this.isBluetoothActive,

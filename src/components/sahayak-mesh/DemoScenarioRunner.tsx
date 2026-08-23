@@ -51,29 +51,29 @@ export function DemoScenarioRunner() {
     },
     {
       stepNumber: 3,
-      title: '3. Staff reports Central Elevator 1 as broken',
-      expectedResult: 'All connected nodes receive state update: Central Elevator 1 becomes BROKEN.',
+      title: '3. Staff reports Admin Block Elevator as broken',
+      expectedResult: 'All connected nodes receive state update: Admin Block Elevator becomes BROKEN.',
       action: () => {
         submitObservation({
-          resourceId: 'res-lift-1',
+          resourceId: 'res-admin-lift',
           state: 'Broken',
           confidence: 0.95,
-          reason: 'Nurse reported elevator door lock defect',
+          reason: 'Faculty reported elevator door lock defect',
           sourceNodeId: 'node-staff-1'
         });
-        setStepLogs(prev => [...prev, '✓ Staff report published: Elevator 1 set to BROKEN.']);
+        setStepLogs(prev => [...prev, '✓ Staff report published: Admin Elevator set to BROKEN.']);
       }
     },
     {
       stepNumber: 4,
-      title: '4. Relay reports duplicate lift failure',
+      title: '4. Relay reports duplicate elevator failure',
       expectedResult: 'Observation is merged as a duplicate/supporting source without duplicating the incident.',
       action: () => {
         submitObservation({
-          resourceId: 'res-lift-1',
+          resourceId: 'res-admin-lift',
           state: 'Broken',
           confidence: 0.85,
-          reason: 'Volunteer confirmed elevator unavailable',
+          reason: 'Student volunteer confirmed elevator unavailable',
           sourceNodeId: 'node-relay-1'
         });
         setStepLogs(prev => [...prev, '✓ Duplicate observation merged into supporting evidence sources.']);
@@ -82,7 +82,7 @@ export function DemoScenarioRunner() {
     {
       stepNumber: 5,
       title: '5. Visitor requests elevator route after breakdown',
-      expectedResult: 'Safe decision engine avoids Broken Lift 1 and recommends West Wing Accessible Ramp.',
+      expectedResult: 'Safe decision engine avoids Broken Admin Lift and recommends CSE Block Elevator.',
       action: () => {
         const dec = evaluateRoute({
           requestId: 'demo-req-2',
@@ -90,7 +90,7 @@ export function DemoScenarioRunner() {
           accessibilityNeed: true,
           createdAt: Date.now()
         });
-        setStepLogs(prev => [...prev, `✓ Safety filter active: Avoided broken Lift 1. Result: ${dec.explanation.slice(0, 80)}...`]);
+        setStepLogs(prev => [...prev, `✓ Safety filter active: Avoided broken Admin Lift. Result: ${dec.explanation.slice(0, 80)}...`]);
       }
     },
     {
@@ -109,9 +109,9 @@ export function DemoScenarioRunner() {
       expectedResult: 'Observation is persisted in local outbox queue pending re-establishment of transport.',
       action: () => {
         submitObservation({
-          resourceId: 'res-counter-2',
+          resourceId: 'res-admin-counter',
           state: 'Busy',
-          reason: 'High crowd observed at Counter 2 while offline',
+          reason: 'High crowd observed at Admin Desk while offline',
           sourceNodeId: 'node-staff-1'
         });
         setStepLogs(prev => [...prev, '✓ Offline observation stored locally in Outbox queue (1 pending).']);
